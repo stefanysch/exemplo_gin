@@ -1,36 +1,32 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
-	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	mux := http.NewServeMux()
 
-	r := gin.New()
+	mux.HandleFunc("GET /health", HealthcheckHandler)
 
-	// Uso dos Middlewares globais nativos e personalizados
-	r.Use(gin.Recovery())
+	mux.HandleFunc("POST /salas", CriarSalaHandler)
+	mux.HandleFunc("GET /salas", ListarSalasHandler)
 
-	// 4. Mapeamento de Rotas sob Grupo Versionado
-	v1 := r.Group("/api/v1")
-	{
-		// Monitoramento da API
-		v1.GET("/health", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"status":    "healthy",
-				"timestamp": time.Now(),
-				"version":   "1.0.0",
-			})
-		})
+	mux.HandleFunc("POST /alunos", CriarAlunoHandler)
+	mux.HandleFunc("GET /alunos", ListarAlunosHandler)
+	mux.HandleFunc("GET /alunos/{id}", BuscarAlunoPorIDHandler)
 
-		// Domínio de Turmas (Classes)
-		//v1.POST("/turmas", turmaHandler.CriarTurma)
-		//v1.GET("/turmas", turmaHandler.ListarTurmas)
-		//v1.POST("/turmas/:id/alocar", turmaHandler.AlocarSala)
+	mux.HandleFunc("POST /turmas", CriarTurmaHandler)
+	mux.HandleFunc("GET /turmas", ListarTurmasHandler)
+	mux.HandleFunc("POST /turmas/{id}/matriculas", MatricularAlunoHandler)
+	mux.HandleFunc("GET /turmas/{id}/alunos", ListarAlunosDaTurmaHandler)
+
+	mux.HandleFunc("POST /turmas/{id}/alocacao", AlocarSalaHandler)
+
+	fmt.Println("Servidor SGA rodando na porta :8080...")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal("Erro ao iniciar o servidor:", err)
 	}
-
-	r.Run(":8080")
 }
