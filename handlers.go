@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
+	"strings"
 	"time"
 )
 
@@ -56,6 +58,7 @@ func ListarSalasHandler(w http.ResponseWriter, r *http.Request) {
 	for _, sala := range db.Salas {
 		salas = append(salas, sala)
 	}
+	sort.Slice(salas, func(i, j int) bool { return salas[i].ID < salas[j].ID })
 
 	respondJSON(w, http.StatusOK, salas)
 }
@@ -92,6 +95,7 @@ func ListarAlunosHandler(w http.ResponseWriter, r *http.Request) {
 	for _, aluno := range db.Alunos {
 		alunos = append(alunos, aluno)
 	}
+	sort.Slice(alunos, func(i, j int) bool { return alunos[i].ID < alunos[j].ID })
 
 	respondJSON(w, http.StatusOK, alunos)
 }
@@ -160,6 +164,7 @@ func ListarTurmasHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		response = append(response, tr)
 	}
+	sort.Slice(response, func(i, j int) bool { return response[i].ID < response[j].ID })
 
 	respondJSON(w, http.StatusOK, response)
 }
@@ -268,6 +273,16 @@ func AlocarSalaHandler(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Todos os campos da alocação são obrigatórios")
 		return
 	}
+
+	if !horarioValido(alocacao.HorarioInicio) || !horarioValido(alocacao.HorarioTermino) {
+		respondError(w, http.StatusBadRequest, "Horários devem estar no formato HH:MM")
+		return
+	}
+	if alocacao.HorarioInicio >= alocacao.HorarioTermino {
+		respondError(w, http.StatusBadRequest, "horario_inicio deve ser anterior a horario_termino")
+		return
+	}
+	alocacao.DiaSemana = strings.ToLower(strings.TrimSpace(alocacao.DiaSemana))
 
 	db.mu.Lock()
 	defer db.mu.Unlock()

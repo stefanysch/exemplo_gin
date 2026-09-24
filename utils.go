@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func respondJSON(w http.ResponseWriter, status int, data interface{}) {
@@ -15,6 +16,11 @@ func respondJSON(w http.ResponseWriter, status int, data interface{}) {
 
 func respondError(w http.ResponseWriter, status int, mensagem string) {
 	respondJSON(w, status, ErrorResponse{Mensagem: mensagem})
+}
+
+func horarioValido(h string) bool {
+	_, err := time.Parse("15:04", h)
+	return err == nil
 }
 
 func temSobreposicao(inicio1, termino1, inicio2, termino2 string) bool {

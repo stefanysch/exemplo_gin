@@ -14,19 +14,19 @@ type Aluno struct {
 }
 
 type Alocacao struct {
-	SalaID        string `json:"sala_id"`
-	DiaSemana     string `json:"dia_semana"`
-	HorarioInicio string `json:"horario_inicio"` 
+	SalaID         string `json:"sala_id"`
+	DiaSemana      string `json:"dia_semana"`
+	HorarioInicio  string `json:"horario_inicio"`
 	HorarioTermino string `json:"horario_termino"`
 }
 
 type Turma struct {
-	ID        string    `json:"id"`
-	Nome      string    `json:"nome"`
-	Disciplina string   `json:"disciplina"`
-	Professor string    `json:"professor"`
-	AlunosIDs []string  `json:"alunos_ids"`
-	Alocacao  *Alocacao `json:"alocacao,omitempty"`
+	ID         string    `json:"id"`
+	Nome       string    `json:"nome"`
+	Disciplina string    `json:"disciplina"`
+	Professor  string    `json:"professor"`
+	AlunosIDs  []string  `json:"alunos_ids"`
+	Alocacao   *Alocacao `json:"alocacao,omitempty"`
 }
 
 type TurmaResponse struct {
